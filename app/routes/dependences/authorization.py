@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import Depends, Request, HTTPException, status
+from fastapi import Depends, Request, HTTPException, status, Response
 from fastapi.security import OAuth2PasswordBearer
 
 from app.data.schemes.user import UserCredentials, UserInfo
@@ -56,6 +56,30 @@ class AuthorizationHandler:
             raise DeactivatedAccount()
         except (AuthException, UserServiceException):
             raise Unauthorized("Invalid credentials")
+
+    def authorize_user(
+        self, user: UserInfo, response: Response
+    ) -> dict[str, str]:
+        """
+        Creates a pair of access and refresh JW Tokens.
+        Set refresh token into a http only cookie
+        and return dict with type of Token.
+        :param user: UserInfo,
+            that data would be turned into a subject of JWT payload
+        :param response: FastAPI Response - need to set cookie
+        :return: dict[str, str] of type Token
+            example {"access_token": access_token, "token_type": "bearer"}
+        """
+        access_token = self._authorization_service.create_access_token(
+            sub=user.__dict__
+        )
+        refresh_token = self._authorization_service.create_refresh_token(
+            sub=user.__dict__
+        )
+        response.set_cookie(
+            key="X-Refresh-Token", value=refresh_token, httponly=True
+        )
+        return {"access_token": access_token, "token_type": "bearer"}
 
     async def validate_refresh_token(
         self,

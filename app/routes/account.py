@@ -10,7 +10,7 @@ from app.routes.dependences.authorization import (
     Unauthorized,
     authorization_handler,
 )
-from app.services.authorization import authorization_service, AuthException
+from app.services.authorization import AuthException
 from app.services.user import (
     user_service,
     InactiveUserException,
@@ -39,14 +39,8 @@ async def login_for_access_token(
     except (AuthException, UserServiceException, InactiveUserException):
         raise
 
-    access_token = authorization_service.create_access_token(sub=user.__dict__)
-    refresh_token = authorization_service.create_refresh_token(
-        sub=user.__dict__
-    )
-    response.set_cookie(
-        key="X-Refresh-Token", value=refresh_token, httponly=True
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+    access_token = authorization_handler.authorize_user(user, response)
+    return access_token
 
 
 @router.get("/me", response_model=UserInfo)
@@ -55,7 +49,13 @@ async def read_users_me(
         UserInfo, Depends(authorization_handler.validate_access_token)
     ]
 ):
-    user = user_service.get(claims.id)
+    try:
+        user = user_service.get(claims.id)
+    except InactiveUserException:
+        raise DeactivatedAccount()
+    except UserServiceException:
+        raise Unauthorized("Who are you? Please reauthenticate to the system")
+
     return user
 
 
@@ -78,12 +78,5 @@ async def refresh_tokens(
         username=user.username,
         id=user.id,
     )
-
-    access_token = authorization_service.create_access_token(sub=user.__dict__)
-    refresh_token = authorization_service.create_refresh_token(
-        sub=user.__dict__
-    )
-    response.set_cookie(
-        key="X-Refresh-Token", value=refresh_token, httponly=True
-    )
-    return {"access_token": access_token, "token_type": "bearer"}
+    access_token = authorization_handler.authorize_user(user, response)
+    return access_token
