@@ -1,111 +1,64 @@
-from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import Depends, Request
+from fastapi import Depends, Request, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from jose import JWTError, jwt
-from passlib.context import CryptContext
 
-from app.data.crud import (
-    get_user_by_email,
-    get_user,
-    add_refresh_token,
-    check_refresh_token,
-    disable_refresh_token,
-)
-from app.data import models
 from app.data.schemes.user import UserCredentials, UserInfo
-
-# to get a string like this run:
-# openssl rand -hex 32
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_WEEKS = 4
+from app.services.authorization import authorization_service, AuthException
+from app.services.user import UserServiceException, InactiveUserException
 
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/account/login")
 
 
-class AuthException(Exception):
-    pass
+class Unauthorized(HTTPException):
+    def __init__(
+        self,
+        message: str,
+    ) -> None:
+        headers = {"WWW-Authenticate": "Bearer"}
+        status_code: int = status.HTTP_401_UNAUTHORIZED
+        super().__init__(
+            status_code=status_code, detail=message, headers=headers
+        )
 
 
-class InactiveUserException(AuthException):
-    pass
+class DeactivatedAccount(HTTPException):
+    def __init__(
+        self,
+    ) -> None:
+        status_code: int = status.HTTP_401_UNAUTHORIZED
+        super().__init__(
+            status_code=status_code, detail="Your account is deactivated"
+        )
 
 
 def authenticate_user(credentials: UserCredentials) -> UserInfo:
-    user = get_user_by_email(credentials.email)
-    if not user or not user.password == credentials.password:
-        raise AuthException("Incorrect login or password")
-    if not user.is_active:
-        raise InactiveUserException()
-
-    return UserInfo(
-        email=user.email,
-        username=user.username,
-        id=user.id,
-    )
-
-
-def create_access_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(ACCESS_TOKEN_EXPIRE_MINUTES)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    return encoded_jwt
-
-
-def create_refresh_token(data: dict) -> str:
-    to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(REFRESH_TOKEN_EXPIRE_WEEKS)
-    to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-    add_refresh_token(encoded_jwt)
-    return encoded_jwt
+    try:
+        return authorization_service.authenticate_user(credentials)
+    except InactiveUserException:
+        raise DeactivatedAccount()
+    except (AuthException, UserServiceException):
+        raise Unauthorized("Invalid credentials")
 
 
 async def validate_refresh_token(
     request: Request,
-):
-    refresh_token = request.cookies.get("X-Refresh-Token")
-    if not check_refresh_token(refresh_token):
-        raise AuthException("Invalid refresh token")
-    disable_refresh_token(refresh_token)
-    user = await get_current_user(refresh_token)
-    return await get_current_active_user(user)
-
-
-async def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)]
-) -> models.User:
-    try:
-        payload = jwt.decode(
-            token,
-            SECRET_KEY,
-            algorithms=[ALGORITHM],
-            options={"verify_sub": False},
-        )
-        user: UserInfo = UserInfo(**payload.get("sub"))
-        if user is None:
-            raise AuthException()
-    except JWTError:
-        raise AuthException()
-    _user = get_user(user.id)
-    if user is None:
-        raise AuthException()
-    return _user
-
-
-async def get_current_active_user(
-    current_user: Annotated[models.User, Depends(get_current_user)]
 ) -> UserInfo:
-    if not current_user.is_active:
-        raise InactiveUserException()
-    return UserInfo(
-        email=current_user.email,
-        username=current_user.username,
-        id=current_user.id,
-    )
+    refresh_token = request.cookies.get("X-Refresh-Token")
+    return await validate_token(refresh_token)
+
+
+async def validate_access_token(
+    token: Annotated[str, Depends(oauth2_scheme)]
+) -> UserInfo:
+    return await validate_token(token)
+
+
+async def validate_token(token: str):
+    try:
+        return await authorization_service.validate_token(token)
+    except AuthException:
+        raise Unauthorized(
+            "Your token got invalid. Please reauthenticate to the system"
+        )
