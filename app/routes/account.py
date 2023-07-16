@@ -6,11 +6,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from app.data.schemes.token import Token
 from app.data.schemes.user import UserCredentials, UserInfo
 from app.routes.dependences.authorization import (
-    authenticate_user,
-    validate_refresh_token,
-    validate_access_token,
     DeactivatedAccount,
     Unauthorized,
+    authorization_handler,
 )
 from app.services.authorization import authorization_service, AuthException
 from app.services.user import (
@@ -33,7 +31,7 @@ async def login_for_access_token(
     response: Response,
 ):
     try:
-        user = authenticate_user(
+        user = authorization_handler.authenticate_user(
             UserCredentials(
                 email=form_data.username, password=form_data.password
             )
@@ -53,7 +51,9 @@ async def login_for_access_token(
 
 @router.get("/me", response_model=UserInfo)
 async def read_users_me(
-    claims: Annotated[UserInfo, Depends(validate_access_token)]
+    claims: Annotated[
+        UserInfo, Depends(authorization_handler.validate_access_token)
+    ]
 ):
     user = user_service.get(claims.id)
     return user
@@ -61,7 +61,9 @@ async def read_users_me(
 
 @router.get("/refresh", response_model=Token)
 async def refresh_tokens(
-    claims: Annotated[UserInfo, Depends(validate_refresh_token)],
+    claims: Annotated[
+        UserInfo, Depends(authorization_handler.validate_refresh_token)
+    ],
     response: Response,
 ):
     try:
@@ -72,10 +74,10 @@ async def refresh_tokens(
         raise Unauthorized("Who are you? Please reauthenticate to the system")
 
     user = UserInfo(
-            email=user.email,
-            username=user.username,
-            id=user.id,
-        )
+        email=user.email,
+        username=user.username,
+        id=user.id,
+    )
 
     access_token = authorization_service.create_access_token(sub=user.__dict__)
     refresh_token = authorization_service.create_refresh_token(

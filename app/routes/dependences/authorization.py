@@ -4,7 +4,11 @@ from fastapi import Depends, Request, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
 from app.data.schemes.user import UserCredentials, UserInfo
-from app.services.authorization import authorization_service, AuthException
+from app.services.authorization import (
+    authorization_service,
+    AuthException,
+    AuthorizationService,
+)
 from app.services.user import UserServiceException, InactiveUserException
 
 
@@ -33,32 +37,45 @@ class DeactivatedAccount(HTTPException):
         )
 
 
-def authenticate_user(credentials: UserCredentials) -> UserInfo:
-    try:
-        return authorization_service.authenticate_user(credentials)
-    except InactiveUserException:
-        raise DeactivatedAccount()
-    except (AuthException, UserServiceException):
-        raise Unauthorized("Invalid credentials")
+class AuthorizationHandler:
+    scheme: OAuth2PasswordBearer
+    _authorization_service: AuthorizationService
+
+    def __init__(
+        self,
+        scheme=oauth2_scheme,
+        _authorization_service=authorization_service,
+    ):
+        self.scheme = scheme
+        self._authorization_service = _authorization_service
+
+    def authenticate_user(self, credentials: UserCredentials) -> UserInfo:
+        try:
+            return self._authorization_service.authenticate_user(credentials)
+        except InactiveUserException:
+            raise DeactivatedAccount()
+        except (AuthException, UserServiceException):
+            raise Unauthorized("Invalid credentials")
+
+    async def validate_refresh_token(
+        self,
+        request: Request,
+    ) -> UserInfo:
+        refresh_token = request.cookies.get("X-Refresh-Token")
+        return await self.validate_token(refresh_token)
+
+    async def validate_access_token(
+        self, token: Annotated[str, Depends(oauth2_scheme)]
+    ) -> UserInfo:
+        return await self.validate_token(token)
+
+    async def validate_token(self, token: str):
+        try:
+            return await self._authorization_service.validate_token(token)
+        except AuthException:
+            raise Unauthorized(
+                "Your token got invalid. Please reauthenticate to the system"
+            )
 
 
-async def validate_refresh_token(
-    request: Request,
-) -> UserInfo:
-    refresh_token = request.cookies.get("X-Refresh-Token")
-    return await validate_token(refresh_token)
-
-
-async def validate_access_token(
-    token: Annotated[str, Depends(oauth2_scheme)]
-) -> UserInfo:
-    return await validate_token(token)
-
-
-async def validate_token(token: str):
-    try:
-        return await authorization_service.validate_token(token)
-    except AuthException:
-        raise Unauthorized(
-            "Your token got invalid. Please reauthenticate to the system"
-        )
+authorization_handler = AuthorizationHandler()
