@@ -20,5 +20,8 @@ class ChatService:
     def get_all(self, uid: int) -> dict[str, models.Chat]:
         return self.query.get_all(uid)
 
+    def get(self, uid: int, chat_id) -> models.Chat:
+        return self.query.get(uid, chat_id)
+
 
 chat_service = ChatService()

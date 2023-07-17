@@ -23,5 +23,10 @@ class ChatQuery:
                 chats[chat.id] = chat
         return chats
 
+    def get(self, uid: int, chat_id: int) -> models.Chat:
+        for chat in self.db["chats"].values():
+            if uid in chat.user_ids and chat.id == chat_id:
+                return chat
+
 
 chat_query = ChatQuery()

@@ -21,7 +21,7 @@ class MessageQuery:
     def get_all(self, chat_id: int) -> dict[str, models.Message]:
         messages: dict[str, models.Message] = {}
         for message in self.db["Messages"].values():
-            if chat_id in message.chat_id:
+            if chat_id == message.chat_id:
                 messages[message.id] = message
         return messages
 
