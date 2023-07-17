@@ -9,7 +9,10 @@ class ChatBase(BaseModel):
     pass
 
 
-class Chat(ChatBase):
-    id: int
+class ChatUsers(ChatBase):
     user_ids: List[int]
+
+
+class Chat(ChatUsers):
+    id: int
     messages: List[Message]

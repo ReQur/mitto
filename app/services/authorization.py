@@ -51,6 +51,7 @@ class AuthorizationService:
         )
 
     def authenticate_user(self, credentials: UserCredentials) -> UserInfo:
+        # TODO: Move user service injection to higher level
         user = self.users.get(email=credentials.email)
         if not user or not user.password == credentials.password:
             raise AuthException("Incorrect login or password")

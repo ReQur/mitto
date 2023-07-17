@@ -1,9 +1,10 @@
 from fastapi import FastAPI
-from app.routes import account
+from app.routes import account, websocket
 
 app = FastAPI()
 
 app.include_router(account.router)
+app.include_router(websocket.router)
 
 
 @app.get("/")
