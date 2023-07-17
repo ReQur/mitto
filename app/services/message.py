@@ -25,7 +25,7 @@ class MessageService:
             text=message.text,
         )
 
-    def get_all(self, chat_id: int) -> dict[str, models.Message]:
+    def get_all(self, chat_id: int) -> dict[int, models.Message]:
         return self.query.get_all(chat_id)
 
 

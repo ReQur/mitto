@@ -15,9 +15,9 @@ class ChatService:
 
     def add(self, users: ChatUsers) -> Chat:
         chat_id = self.query.add(users.user_ids)
-        return Chat(id=chat_id, users=users.user_ids, messages=[])
+        return Chat(id=chat_id, user_ids=users.user_ids, messages=[])
 
-    def get_all(self, uid: int) -> dict[str, models.Chat]:
+    def get_all(self, uid: int) -> dict[int, Chat]:
         return self.query.get_all(uid)
 
     def get(self, uid: int, chat_id) -> models.Chat:

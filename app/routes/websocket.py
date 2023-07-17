@@ -12,7 +12,7 @@ html = """
 <!DOCTYPE html>
 <html>
     <head>
-        <title>Chat</title>
+        <title>Chat</title> 
     </head>
     <body>
         <h1>WebSocket Chat</h1>

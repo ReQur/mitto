@@ -18,9 +18,9 @@ class MessageQuery:
         )
         return chat_id
 
-    def get_all(self, chat_id: int) -> dict[str, models.Message]:
-        messages: dict[str, models.Message] = {}
-        for message in self.db["Messages"].values():
+    def get_all(self, chat_id: int) -> dict[int, models.Message]:
+        messages: dict[int, models.Message] = {}
+        for message in self.db["messages"].values():
             if chat_id == message.chat_id:
                 messages[message.id] = message
         return messages
