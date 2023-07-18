@@ -1,0 +1,4 @@
+<div>
+  <button (click)="refreshToken()">Refresh Token</button>
+  <p *ngIf="token">Token: {{ token.access_token }}</p>
+</div>

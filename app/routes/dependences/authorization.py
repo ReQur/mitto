@@ -120,7 +120,10 @@ class AuthorizationHandler:
             sub=user.__dict__
         )
         response.set_cookie(
-            key="X-Refresh-Token", value=refresh_token, httponly=True
+            key="X-Refresh-Token",
+            value=refresh_token,
+            httponly=True,
+            samesite=None,
         )
         return {"access_token": access_token, "token_type": "bearer"}
 
