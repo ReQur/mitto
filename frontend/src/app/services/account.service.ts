@@ -17,7 +17,9 @@ export class AccountService {
     body = body.set('username', username);
     body = body.set('password', password);
 
-    return this.http.post<Token>(`${this.API_URL}/account/login`, body).pipe(
+    return this.http.post<Token>(`${this.API_URL}/account/login`, body,
+      {headers: {'Content-Type': `application/x-www-form-urlencoded`}}
+      ).pipe(
       tap(token => {
         this.access_token = token.access_token
       })
@@ -49,7 +51,9 @@ export class AccountService {
   }
 
   refreshToken(): Observable<Token> {
-    return this.http.get<Token>(`${this.API_URL}/account/refresh`).pipe(tap(token => {
+    return this.http.get<Token>(`${this.API_URL}/account/refresh`,
+      {headers: {'Content-Type': `application/x-www-form-urlencoded`}}
+    ).pipe(tap(token => {
       this.access_token = token.access_token
     }));
   }

@@ -21,7 +21,6 @@ export class JwtAccessInterceptor implements HttpInterceptor {
       });
     }
     request = request.clone({
-      setHeaders: { 'Content-Type': `application/x-www-form-urlencoded` },
       withCredentials: true
     });
 

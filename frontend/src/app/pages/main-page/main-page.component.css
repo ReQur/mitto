@@ -9,3 +9,17 @@
   padding: 2rem;
   box-sizing: border-box;
 }
+
+.main-page-container {
+  display: flex;
+}
+
+.left-side {
+  flex: 1;
+  /* Add more styles here if needed */
+}
+
+.right-side {
+  flex: 1;
+  /* Add more styles here if needed */
+}

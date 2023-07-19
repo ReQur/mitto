@@ -27,12 +27,12 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=dict[int, Chat])
+@router.get("/", response_model=list[Chat])
 async def get_chats(
     claims: Annotated[
         UserInfo, Depends(authorization_handler.validate_access_token)
     ]
-) -> dict[int, Chat]:
+) -> list[Chat]:
     try:
         user = user_service.get(claims.id)
     except InactiveUserException:
@@ -40,16 +40,16 @@ async def get_chats(
     except UserServiceException:
         raise Unauthorized("Who are you? Please reauthenticate to the system")
 
-    return chat_manager.get_chats(user)
+    return chat_manager.get_chats(user).values()
 
 
-@router.get("/{chat_id}/messages", response_model=dict[int, models.Message])
+@router.get("/{chat_id}/messages", response_model=list[models.Message])
 async def get_messages(
     claims: Annotated[
         UserInfo, Depends(authorization_handler.validate_access_token)
     ],
     chat_id: int,
-) -> dict[int, models.Message]:
+) -> list[models.Message]:
     try:
         user = user_service.get(claims.id)
     except InactiveUserException:
@@ -57,7 +57,7 @@ async def get_messages(
     except UserServiceException:
         raise Unauthorized("Who are you? Please reauthenticate to the system")
 
-    return chat_manager.get_messages(user, chat_id)
+    return chat_manager.get_messages(user, chat_id).values()
 
 
 @router.post("/send-message", response_model=models.Message)
@@ -105,6 +105,4 @@ async def initiate_chat(
     except UserServiceException:
         raise BadRequest("Cannot find asked account")
 
-    return chat_manager.initiate_chat(
-        user, recipient, message
-    )
+    return chat_manager.initiate_chat(user, recipient, message)

@@ -1,0 +1,7 @@
+<button (click)="getChats()">Refresh chats</button>
+
+<table>
+  <tr *ngFor="let chat of chats">
+    <td (click)="selectChat(chat.id)">{{chat.id}}</td>
+  </tr>
+</table>

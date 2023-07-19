@@ -14,6 +14,8 @@ import {MatFormFieldModule} from "@angular/material/form-field";
 import {MatInputModule} from "@angular/material/input";
 import {MatButtonModule} from "@angular/material/button";
 import {MatCardModule} from "@angular/material/card";
+import { ChatListComponent } from './components/chat-list/chat-list.component';
+import { ChatComponent } from './components/chat/chat.component';
 
 
 @NgModule({
@@ -22,7 +24,9 @@ import {MatCardModule} from "@angular/material/card";
     LoginComponent,
     UserInfoComponent,
     RefreshTokenComponent,
-    MainPageComponent
+    MainPageComponent,
+    ChatListComponent,
+    ChatComponent
   ],
   imports: [
     BrowserModule,

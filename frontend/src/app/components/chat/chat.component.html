@@ -1,0 +1,8 @@
+<div *ngFor="let message of messages">
+  <p>{{message.owner_id}}: {{message.text}}</p>
+</div>
+
+<form (submit)="sendMessage()">
+  <input [(ngModel)]="newMessageText" name="newMessageText">
+  <button type="submit">Send</button>
+</form>
