@@ -9,6 +9,7 @@ import { FormsModule } from "@angular/forms";
 import { AppRoutingModule } from "./app-routing.module";
 import {HttpClientModule} from "@angular/common/http";
 import {InterceptorsModule} from "./interceptors/interceptor.module";
+import { MainPageComponent } from './pages/main-page/main-page.component';
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import {InterceptorsModule} from "./interceptors/interceptor.module";
     AppComponent,
     LoginComponent,
     UserInfoComponent,
-    RefreshTokenComponent
+    RefreshTokenComponent,
+    MainPageComponent
   ],
   imports: [
     BrowserModule,

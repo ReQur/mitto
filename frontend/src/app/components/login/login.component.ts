@@ -18,6 +18,17 @@ export class LoginComponent {
     // @ts-ignore
     this.accountService.login(this.username, this.password).subscribe(token => {
       console.log(token);
+
     });
   }
+
+  get authorized(): boolean {
+    return this.accountService.access_token != ''
+  }
+
+  get user_email(): string {
+    return this.accountService.user_info.email
+  }
+
+
 }

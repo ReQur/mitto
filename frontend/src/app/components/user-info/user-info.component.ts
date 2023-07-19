@@ -18,4 +18,9 @@ export class UserInfoComponent implements OnInit {
       this.userInfo = userInfo;
     });
   }
+  get_user(): void {
+    this.accountService.getUserInfo().subscribe(userInfo => {
+      this.userInfo = userInfo;
+    });
+  }
 }

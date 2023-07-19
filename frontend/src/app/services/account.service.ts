@@ -32,10 +32,20 @@ export class AccountService {
     localStorage.setItem('access_token', access_token);
   }
 
+  get user_info(): UserInfo {
+    return JSON.parse(localStorage.getItem('user_info') ?? "{}");
+  }
 
+  set user_info(info: UserInfo) {
+    localStorage.setItem('user_info', JSON.stringify(info));
+  }
 
   getUserInfo(): Observable<UserInfo> {
-    return this.http.get<UserInfo>(`${this.API_URL}/account/me`);
+    return this.http.get<UserInfo>(`${this.API_URL}/account/me`).pipe(
+      tap(info => {
+          this.user_info = info
+        })
+    );
   }
 
   refreshToken(): Observable<Token> {

@@ -3,3 +3,6 @@
   <input [(ngModel)]="password" placeholder="password" type="password">
   <button (click)="login()">Login</button>
 </div>
+<div *ngIf="authorized">
+  <p>You authorized as {{user_email}}</p>
+</div>
