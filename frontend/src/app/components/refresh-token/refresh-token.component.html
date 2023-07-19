@@ -1,4 +1,4 @@
-<div>
-  <button (click)="refreshToken()">Refresh Token</button>
-  <p *ngIf="token">Token: {{ token.access_token }}</p>
+<div class="refresh-token-container">
+  <button mat-raised-button color="primary" (click)="refreshToken()">Refresh Token</button>
+  <p *ngIf="token"><strong>Token:</strong> {{ token.access_token }}</p>
 </div>

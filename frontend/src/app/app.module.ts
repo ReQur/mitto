@@ -10,6 +10,10 @@ import { AppRoutingModule } from "./app-routing.module";
 import {HttpClientModule} from "@angular/common/http";
 import {InterceptorsModule} from "./interceptors/interceptor.module";
 import { MainPageComponent } from './pages/main-page/main-page.component';
+import {MatFormFieldModule} from "@angular/material/form-field";
+import {MatInputModule} from "@angular/material/input";
+import {MatButtonModule} from "@angular/material/button";
+import {MatCardModule} from "@angular/material/card";
 
 
 @NgModule({
@@ -26,6 +30,10 @@ import { MainPageComponent } from './pages/main-page/main-page.component';
     AppRoutingModule,
     HttpClientModule,
     InterceptorsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCardModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
