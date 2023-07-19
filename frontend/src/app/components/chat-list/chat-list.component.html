@@ -1,5 +1,11 @@
 <button (click)="getChats()">Refresh chats</button>
 
+<form (submit)="initiateChat()">
+  <input [(ngModel)]="newMessageText" name="newMessageText">
+  <input [(ngModel)]="recipientId" name="recipientId">
+  <button type="submit">Start new chat</button>
+</form>
+
 <table>
   <tr *ngFor="let chat of chats">
     <td (click)="selectChat(chat.id)">{{chat.id}}</td>

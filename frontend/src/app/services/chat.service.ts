@@ -29,16 +29,15 @@ export class ChatService {
   }
 
   sendMessage(chatId: number, ownerId: number, text: string): Observable<Message> {
-    let message: MessageSend = {
-      "text": text,
-      "chat_id": chatId,
-      "owner_id": ownerId
-    }
     return this.http.post<Message>(`${this.apiUrl}/chat/send-message`, {
       "text": text,
       "chat_id": chatId,
       "owner_id": ownerId
     });
+  }
+
+  initiateChat(recipientId: number, text: string): Observable<Message> {
+    return this.http.post<Message>(`${this.apiUrl}/chat/initiate/${recipientId}`, {"text": text});
   }
 
 }

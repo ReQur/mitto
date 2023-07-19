@@ -10,6 +10,9 @@ import {Chat} from "../../models/chat";
 export class ChatListComponent implements OnInit {
   chats: Chat[] = []
 
+  newMessageText: string = '';
+  recipientId: string = '';
+
   constructor(private chatService: ChatService) { }
 
   ngOnInit(): void {
@@ -22,6 +25,15 @@ export class ChatListComponent implements OnInit {
 
   selectChat(id: number) {
     this.chatService.current_chat_id = id
+  }
+
+  initiateChat(): void {
+    this.chatService.initiateChat(Number(this.recipientId), this.newMessageText)
+      // @ts-ignore
+      .subscribe(message => {
+        this.newMessageText = '';
+        this.recipientId = '';
+      });
   }
 
 }

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.data import models
 from app.data.schemes.chat import Chat
-from app.data.schemes.message import MessageSend
+from app.data.schemes.message import MessageSend, MessageBase
 from app.data.schemes.user import UserInfo
 from app.routes.dependences.authorization import (
     DeactivatedAccount,
@@ -89,7 +89,7 @@ async def initiate_chat(
         UserInfo, Depends(authorization_handler.validate_access_token)
     ],
     recipient_id: int,
-    message: str,
+    message: MessageBase,
 ):
     try:
         user = user_service.get(claims.id)
@@ -105,4 +105,4 @@ async def initiate_chat(
     except UserServiceException:
         raise BadRequest("Cannot find asked account")
 
-    return chat_manager.initiate_chat(user, recipient, message)
+    return chat_manager.initiate_chat(user, recipient, message.text)
