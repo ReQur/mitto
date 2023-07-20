@@ -1,5 +1,7 @@
+import {Message} from "./message";
+
 export interface Chat {
   user_ids: [number];
-  message: [];
+  messages: Message[];
   id: number;
 }

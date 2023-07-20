@@ -2,6 +2,8 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ChatService } from "src/app/services/chat.service";
 import { AccountService } from "src/app/services/account.service";
 import {Message} from "../../models/message";
+import {Subject, takeUntil} from "rxjs";
+import {Chat} from "../../models/chat";
 
 @Component({
   selector: 'app-chat',
@@ -9,25 +11,36 @@ import {Message} from "../../models/message";
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-  messages: Message[] = [];
+  currentChat?: Chat
   newMessageText: string = '';
 
+  private unsubscribe$ = new Subject<void>();
+
   constructor(private chatService: ChatService, private accountService: AccountService) { }
-
   ngOnInit(): void {
-    this.getMessages();
+    this.chatService.currentChat.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(currentChat => {
+      if (currentChat) {
+        this.currentChat =  currentChat;
+      }
+    });
+    this.chatService.reload();
   }
 
-  getMessages(): void {
-    this.chatService.getMessages(this.chatService.current_chat_id).subscribe(messages => this.messages = messages);
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
+
 
   sendMessage(): void {
-    this.chatService.sendMessage(this.chatService.current_chat_id, this.accountService.user_info.id, this.newMessageText)
-      // @ts-ignore
-      .subscribe(message => {
-        this.messages.push(message);
-        this.newMessageText = '';
-      });
+    if (this.currentChat){
+      this.chatService.sendMessage(this.currentChat.id, this.accountService.user_info.id, this.newMessageText)
+        // @ts-ignore
+        .subscribe(message => {
+          this.newMessageText = '';
+        });
+    }
   }
 }

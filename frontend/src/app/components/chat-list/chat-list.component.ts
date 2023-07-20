@@ -22,6 +22,7 @@ export class ChatListComponent implements OnInit {
     ).subscribe(chats => {
       this.chats = chats
     });
+    this.chatService.reload();
   }
 
   ngOnDestroy(): void {
@@ -34,7 +35,7 @@ export class ChatListComponent implements OnInit {
   }
 
   selectChat(id: number) {
-    this.chatService.current_chat_id = id
+    this.chatService.currentChatId = id
   }
 
   initiateChat(): void {

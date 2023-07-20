@@ -1,4 +1,4 @@
-<div *ngFor="let message of messages">
+<div *ngFor="let message of currentChat?.messages">
   <p>{{message.owner_id}}: {{message.text}}</p>
 </div>
 

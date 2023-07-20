@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, map, Observable, tap} from 'rxjs';
 import {Message, MessageSend} from "../models/message";
 import {Chat} from "../models/chat";
 
@@ -9,9 +9,21 @@ import {Chat} from "../models/chat";
 })
 export class ChatService {
   private _chats: BehaviorSubject<Chat[]> = new BehaviorSubject<Chat[]>([]);
+  private _currentChatId: BehaviorSubject<number> = new BehaviorSubject<number>(this.retrieveChatId());
 
   get chats(): Observable<Chat[]> {
     return this._chats.asObservable();
+  }
+
+  get currentChat(): Observable<Chat | undefined> {
+    return combineLatest([this._chats, this._currentChatId]).pipe(
+      map(([chats, currentChatId]) => chats.find(chat => chat.id === currentChatId))
+    );
+  }
+
+  set currentChatId(id: number) {
+    localStorage.setItem('current_chat_id', id.toString());
+    this._currentChatId.next(id);
   }
 
   private apiUrl = 'http://localhost:8000';  // Change this to your actual API URL
@@ -19,17 +31,20 @@ export class ChatService {
 
   constructor(private http: HttpClient) { }
 
-  set current_chat_id(id: number) {
-    localStorage.setItem('current_chat_id', id.toString());
-  }
-  get current_chat_id(): number {
-    return Number(localStorage.getItem('current_chat_id'));
-  }
 
   reload(): void {
     this.getChats().subscribe(c => {
+      c.forEach((_chat) => {
+         this.getMessages(_chat.id).subscribe(messages => {
+             _chat.messages = messages;
+           })
+      })
       this._chats.next(c);
     })
+  }
+
+  private retrieveChatId(): number {
+    return Number(localStorage.getItem('current_chat_id')) || 0;
   }
 
 
@@ -46,7 +61,11 @@ export class ChatService {
       "text": text,
       "chat_id": chatId,
       "owner_id": ownerId
-    });
+    }).pipe(
+      tap(_ => {
+        this.reload()
+      })
+    );;
   }
 
   initiateChat(recipientId: number, text: string): Observable<Message> {
