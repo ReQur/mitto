@@ -23,3 +23,12 @@
   flex: 1;
   /* Add more styles here if needed */
 }
+
+.chat-area {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1em;
+  height: 100vh;
+  overflow: hidden;
+}

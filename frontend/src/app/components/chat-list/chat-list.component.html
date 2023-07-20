@@ -1,11 +1,23 @@
-<form (submit)="initiateChat()">
-  <input [(ngModel)]="newMessageText" name="newMessageText">
-  <input [(ngModel)]="recipientId" name="recipientId">
-  <button type="submit">Start new chat</button>
-</form>
+<mat-card class="initiate-chat">
+  <div class="input-grid">
+    <mat-form-field appearance="outline" class="chat-input">
+      <mat-label>Recipient ID</mat-label>
+      <input matInput [(ngModel)]="recipientId" />
+    </mat-form-field>
 
-<table>
-  <tr *ngFor="let chat of chats">
-    <td (click)="selectChat(chat.id)">{{chat.id}}</td>
-  </tr>
-</table>
+    <mat-form-field appearance="outline" class="chat-input">
+      <mat-label>First message</mat-label>
+      <input matInput [(ngModel)]="newMessageText" />
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" (click)="initiateChat()">Start new chat</button>
+  </div>
+</mat-card>
+
+<mat-card class="chat-list">
+  <mat-list>
+    <mat-list-item  class="my-chat-item" *ngFor="let chat of chats" (click)="selectChat(chat.id)">
+      Chat with ID: {{chat.id}}
+    </mat-list-item>
+  </mat-list>
+</mat-card>

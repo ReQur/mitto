@@ -16,6 +16,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {MatCardModule} from "@angular/material/card";
 import { ChatListComponent } from './components/chat-list/chat-list.component';
 import { ChatComponent } from './components/chat/chat.component';
+import {MatListModule} from "@angular/material/list";
 
 
 @NgModule({
@@ -28,17 +29,18 @@ import { ChatComponent } from './components/chat/chat.component';
     ChatListComponent,
     ChatComponent
   ],
-  imports: [
-    BrowserModule,
-    FormsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    InterceptorsModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-  ],
+    imports: [
+        BrowserModule,
+        FormsModule,
+        AppRoutingModule,
+        HttpClientModule,
+        InterceptorsModule,
+        MatFormFieldModule,
+        MatInputModule,
+        MatButtonModule,
+        MatCardModule,
+        MatListModule,
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })
