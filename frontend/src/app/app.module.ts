@@ -18,6 +18,7 @@ import { ChatListComponent } from './components/chat-list/chat-list.component';
 import { ChatComponent } from './components/chat/chat.component';
 import {MatListModule} from "@angular/material/list";
 import { LogoutComponent } from './components/logout/logout.component';
+import { TestComponent } from './components/test/test.component';
 
 
 @NgModule({
@@ -29,7 +30,8 @@ import { LogoutComponent } from './components/logout/logout.component';
     MainPageComponent,
     ChatListComponent,
     ChatComponent,
-    LogoutComponent
+    LogoutComponent,
+    TestComponent
   ],
     imports: [
         BrowserModule,
