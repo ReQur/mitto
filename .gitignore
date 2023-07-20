@@ -6,6 +6,8 @@ venv
 ## Frontend .gitignore
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
+/frontend/package-lock.json
+
 # Compiled output
 /frontend/dist
 /frontend/tmp
