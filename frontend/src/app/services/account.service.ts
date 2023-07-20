@@ -1,6 +1,6 @@
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, Observable, tap} from 'rxjs';
+import {BehaviorSubject, distinctUntilChanged, map, Observable, ReplaySubject, tap} from 'rxjs';
 import { Token } from '../models/token';
 import { UserInfo } from '../models/user-info';
 
@@ -10,8 +10,21 @@ import { UserInfo } from '../models/user-info';
 export class AccountService {
   private API_URL = 'http://localhost:8000'; // Replace with your API url
   private _userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject<UserInfo>(this.retrieveUserInfo());
+  private isAuthedSource$ = new ReplaySubject<boolean>(1);
 
-  constructor(private http: HttpClient) { }
+  readonly isAuthed$: Observable<boolean> = this.isAuthedSource$.asObservable().pipe(distinctUntilChanged());
+  readonly isNotAuthed$: Observable<boolean> = this.isAuthed$.pipe(map((state) => !state));
+
+
+  constructor(private http: HttpClient) {
+    if (this.access_token != "none"){
+      this.isAuthedSource$.next(true);
+      this.reload();
+    }
+    else {
+      this.isAuthedSource$.next(false);
+    }
+  }
 
   get userInfo(): Observable<UserInfo> {
     return this._userInfo.asObservable();
@@ -28,8 +41,14 @@ export class AccountService {
       tap(token => {
         this.access_token = token.access_token
         this.reload()
+        this.isAuthedSource$.next(true);
       })
     );
+  }
+
+  logout(): void {
+    localStorage.clear()
+    this.isAuthedSource$.next(false);
   }
 
   get access_token(): string {

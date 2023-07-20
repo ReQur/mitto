@@ -45,16 +45,4 @@ export class LoginComponent {
     });
   }
 
-  get authorized(): boolean {
-    return this.accountService.access_token != ''
-  }
-
-  get user_email(): string {
-    if (this.currentUser){
-      return this.currentUser.email
-    }
-    else return ""
-  }
-
-
 }

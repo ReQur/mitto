@@ -34,10 +34,13 @@ export class ChatService {
     this.accountService.userInfo.subscribe(_ => {
       this.reload();
       this.chats.subscribe( _chat => {
-          this.currentChatId = _chat[0].id
+          this.currentChatId = _chat[0].id ?? -1
         }
       )
     });
+    this.accountService.isNotAuthed$.subscribe(() => {
+      this.clear()
+    })
   }
 
 
@@ -50,6 +53,10 @@ export class ChatService {
       })
       this._chats.next(c);
     })
+  }
+
+  clear(): void {
+    this._chats.next([])
   }
 
   private retrieveChatId(): number {

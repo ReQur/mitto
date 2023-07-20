@@ -34,6 +34,11 @@ export class ChatComponent implements OnInit {
         this.currentUser =  currentUser;
       }
     });
+    this.accountService.isNotAuthed$.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(_ => {
+      this.currentChat = undefined
+    });
     this.chatService.reload();
   }
 
