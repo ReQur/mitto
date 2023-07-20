@@ -1,0 +1,18 @@
+<div class="main-page-container">
+  <div class="left-side">
+    <ng-container *ngIf="accountService.isNotAuthed$ | async">
+      <app-login></app-login>
+    </ng-container>
+    <ng-container *ngIf="accountService.isAuthed$ | async">
+      <app-user-info></app-user-info>
+      <app-refresh-token></app-refresh-token>
+      <app-logout></app-logout>
+    </ng-container>
+  </div>
+  <div class="right-side">
+    <div class="chat-area">
+      <app-chat-list></app-chat-list>
+      <app-chat></app-chat>
+    </div>
+  </div>
+</div>

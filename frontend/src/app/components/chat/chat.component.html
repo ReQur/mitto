@@ -1,0 +1,18 @@
+<mat-card class="messages" *ngIf="currentChat">
+  <mat-list>
+    <mat-list-item *ngFor="let message of currentChat.messages">
+      <div>{{message.owner_id}}: {{message.text}}</div>
+    </mat-list-item>
+  </mat-list>
+</mat-card>
+
+
+<mat-card class="send-message" *ngIf="currentChat">
+  <div class="input-grid">
+    <mat-form-field appearance="outline" class="chat-input">
+      <mat-label>Type a message</mat-label>
+      <input matInput [(ngModel)]="newMessageText" />
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="sendMessage()">Send</button>
+  </div>
+</mat-card>

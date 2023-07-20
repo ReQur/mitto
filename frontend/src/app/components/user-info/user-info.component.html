@@ -1,0 +1,11 @@
+<div class="user-info-container">
+  <div *ngIf="currentUser">
+    <mat-card>
+      <mat-card-content>
+        <p><strong>Email:</strong> {{ currentUser.email }}</p>
+        <p><strong>Username:</strong> {{ currentUser.username }}</p>
+        <p><strong>ID:</strong> {{ currentUser.id }}</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

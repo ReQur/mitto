@@ -1,0 +1,59 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: stretch;
+  width: 50%;
+  padding: 1em;
+  box-sizing: border-box;
+  margin-right: 2em;
+  height: 100%;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),
+  0px 1px 1px 0px rgba(0,0,0,0.14),
+  0px 1px 3px 0px rgba(0,0,0,0.12);
+}
+
+.initiate-chat {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1em;
+}
+
+.initiate-chat > input {
+  flex-grow: 1;
+  margin-right: 1em;
+}
+
+.chat-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  overflow-y: auto;
+}
+
+.input-grid {
+  display: grid;
+  grid-template-columns: 2fr 2fr auto;
+  gap: 1em;
+  align-items: center;
+}
+
+.chat-input {
+  box-sizing: border-box;
+}
+
+.my-chat-item {
+  cursor: pointer;  /* Change the cursor when hovering over the item */
+}
+
+.my-chat-item:hover {
+  background-color: #f5f5f5;  /* Light grey background when hovering */
+}
+
+.my-chat-item:active {
+  background-color: #e0e0e0;  /* Darker grey background when clicking */
+}
