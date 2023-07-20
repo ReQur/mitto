@@ -1,6 +1,6 @@
 import {HttpClient, HttpParams} from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {Observable, tap} from 'rxjs';
+import {BehaviorSubject, Observable, tap} from 'rxjs';
 import { Token } from '../models/token';
 import { UserInfo } from '../models/user-info';
 
@@ -9,8 +9,13 @@ import { UserInfo } from '../models/user-info';
 })
 export class AccountService {
   private API_URL = 'http://localhost:8000'; // Replace with your API url
+  private _userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject<UserInfo>(this.retrieveUserInfo());
 
   constructor(private http: HttpClient) { }
+
+  get userInfo(): Observable<UserInfo> {
+    return this._userInfo.asObservable();
+  }
 
   login(username: string, password: string): Observable<Token> {
     let body = new HttpParams();
@@ -19,9 +24,10 @@ export class AccountService {
 
     return this.http.post<Token>(`${this.API_URL}/account/login`, body,
       {headers: {'Content-Type': `application/x-www-form-urlencoded`}}
-      ).pipe(
+    ).pipe(
       tap(token => {
         this.access_token = token.access_token
+        this.reload()
       })
     );
   }
@@ -34,20 +40,20 @@ export class AccountService {
     localStorage.setItem('access_token', access_token);
   }
 
-  get user_info(): UserInfo {
+  private retrieveUserInfo(): UserInfo {
     return JSON.parse(localStorage.getItem('user_info') ?? "{}");
   }
 
-  set user_info(info: UserInfo) {
-    localStorage.setItem('user_info', JSON.stringify(info));
+  reload(): void {
+    this.getUserInfo().subscribe(info => {
+      localStorage.setItem('user_info', JSON.stringify(info));
+      this._userInfo.next(info);
+    })
   }
 
+
   getUserInfo(): Observable<UserInfo> {
-    return this.http.get<UserInfo>(`${this.API_URL}/account/me`).pipe(
-      tap(info => {
-          this.user_info = info
-        })
-    );
+    return this.http.get<UserInfo>(`${this.API_URL}/account/me`);
   }
 
   refreshToken(): Observable<Token> {

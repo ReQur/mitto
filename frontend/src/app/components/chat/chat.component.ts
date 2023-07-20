@@ -4,6 +4,7 @@ import { AccountService } from "src/app/services/account.service";
 import {Message} from "../../models/message";
 import {Subject, takeUntil} from "rxjs";
 import {Chat} from "../../models/chat";
+import {UserInfo} from "../../models/user-info";
 
 @Component({
   selector: 'app-chat',
@@ -12,6 +13,7 @@ import {Chat} from "../../models/chat";
 })
 export class ChatComponent implements OnInit {
   currentChat?: Chat
+  currentUser?: UserInfo;
   newMessageText: string = '';
 
   private unsubscribe$ = new Subject<void>();
@@ -25,6 +27,13 @@ export class ChatComponent implements OnInit {
         this.currentChat =  currentChat;
       }
     });
+    this.accountService.userInfo.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(currentUser => {
+      if (currentUser) {
+        this.currentUser =  currentUser;
+      }
+    });
     this.chatService.reload();
   }
 
@@ -35,12 +44,13 @@ export class ChatComponent implements OnInit {
 
 
   sendMessage(): void {
-    if (this.currentChat){
-      this.chatService.sendMessage(this.currentChat.id, this.accountService.user_info.id, this.newMessageText)
+    if (this.currentChat && this.currentUser){
+      this.chatService.sendMessage(this.currentChat.id, this.currentUser.id, this.newMessageText)
         // @ts-ignore
         .subscribe(message => {
           this.newMessageText = '';
         });
     }
+
   }
 }

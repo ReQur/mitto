@@ -1,12 +1,10 @@
 <div class="user-info-container">
-  <button mat-raised-button color="primary" (click)="get_user()">Get User</button>
-
-  <div *ngIf="userInfo">
+  <div *ngIf="currentUser">
     <mat-card>
       <mat-card-content>
-        <p><strong>Email:</strong> {{ userInfo.email }}</p>
-        <p><strong>Username:</strong> {{ userInfo.username }}</p>
-        <p><strong>ID:</strong> {{ userInfo.id }}</p>
+        <p><strong>Email:</strong> {{ currentUser.email }}</p>
+        <p><strong>Username:</strong> {{ currentUser.username }}</p>
+        <p><strong>ID:</strong> {{ currentUser.id }}</p>
       </mat-card-content>
     </mat-card>
   </div>

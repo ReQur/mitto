@@ -1,8 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {BehaviorSubject, combineLatest, map, Observable, tap} from 'rxjs';
+import {BehaviorSubject, combineLatest, map, Observable, take, takeUntil, tap} from 'rxjs';
 import {Message, MessageSend} from "../models/message";
 import {Chat} from "../models/chat";
+import {AccountService} from "./account.service";
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,15 @@ export class ChatService {
   private apiUrl = 'http://localhost:8000';  // Change this to your actual API URL
 
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private accountService: AccountService) {
+    this.accountService.userInfo.subscribe(_ => {
+      this.reload();
+      this.chats.subscribe( _chat => {
+          this.currentChatId = _chat[0].id
+        }
+      )
+    });
+  }
 
 
   reload(): void {
@@ -65,7 +74,7 @@ export class ChatService {
       tap(_ => {
         this.reload()
       })
-    );;
+    );
   }
 
   initiateChat(recipientId: number, text: string): Observable<Message> {

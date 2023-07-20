@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AccountService } from 'src/app/services/account.service';
 import { UserInfo } from 'src/app/models/user-info';
+import {Subject, takeUntil} from "rxjs";
 
 @Component({
   selector: 'app-user-info',
@@ -8,19 +9,26 @@ import { UserInfo } from 'src/app/models/user-info';
   styleUrls: ['./user-info.component.css']
 })
 export class UserInfoComponent implements OnInit {
-  // @ts-ignore
-  userInfo: UserInfo;
+  currentUser?: UserInfo;
+
+  private unsubscribe$ = new Subject<void>();
+
 
   constructor(private accountService: AccountService) { }
 
   ngOnInit(): void {
-    this.accountService.getUserInfo().subscribe(userInfo => {
-      this.userInfo = userInfo;
+    this.accountService.userInfo.pipe(
+      takeUntil(this.unsubscribe$)
+    ).subscribe(currentUser => {
+      if (currentUser) {
+        this.currentUser =  currentUser;
+      }
     });
+    this.accountService.reload();
   }
-  get_user(): void {
-    this.accountService.getUserInfo().subscribe(userInfo => {
-      this.userInfo = userInfo;
-    });
+
+  ngOnDestroy(): void {
+    this.unsubscribe$.next();
+    this.unsubscribe$.complete();
   }
 }
