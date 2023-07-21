@@ -10,3 +10,13 @@ services:
     volumes:
       - ./:/usr/src/app
 
+  frontend:
+    build:
+      context: ./frontend/
+      dockerfile: Dockerfile
+    command: ng serve --host 0.0.0.0
+    volumes:
+      - './frontend/:/usr/src/fronted/'
+      - '/usr/src/fronted/node_modules'
+    ports:
+      - '4201:4200'
