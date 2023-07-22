@@ -27,7 +27,7 @@ export class ChatService {
     this._currentChatId.next(id);
   }
 
-  private apiUrl = 'http://localhost:8000';  // Change this to your actual API URL
+  private apiUrl = 'http://localhost:8004';  // Change this to your actual API URL
 
 
   constructor(private http: HttpClient, private accountService: AccountService) {

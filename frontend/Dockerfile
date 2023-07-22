@@ -1,5 +1,5 @@
 # base image
-FROM node:20
+FROM node:18
 
 # install chrome for protractor tests
 RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
@@ -15,7 +15,6 @@ ENV PATH /usr/src/fronted/node_modules/.bin:$PATH
 # install and cache app dependencies
 COPY package.json /usr/src/fronted/package.json
 RUN npm install
-RUN npm install -g @angular/cli@16.1.4
 
 # add app
 COPY . /usr/src/fronted
