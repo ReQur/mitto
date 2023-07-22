@@ -3,12 +3,12 @@ version: '3.3'
 services:
 
   web:
-    build: ./
-    ports:
-      - 8004:8000
+    build: ./api/
     command: uvicorn app.main:app --host 0.0.0.0 --reload
     volumes:
-      - ./:/usr/src/app
+      - ./api/:/usr/src/app
+    ports:
+      - 8004:8000
 
   frontend:
     build:
