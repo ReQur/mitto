@@ -1,4 +1,4 @@
-from fastapi import Depends, Request, HTTPException, status, Response
+from fastapi import HTTPException, status
 
 from app.data import models
 from app.data.schemes.chat import ChatUsers, Chat

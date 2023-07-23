@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from app.routes import account, websocket, chat
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.routes import account, websocket, chat
 
 app = FastAPI()
 
