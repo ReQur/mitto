@@ -7,8 +7,21 @@ services:
     command: uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
     volumes:
       - ./api/:/usr/src/app
+    env_file:
+      - ./api/.env
     ports:
       - "8000:8004"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file:
+      - ./api/.env
+    ports:
+      - 5432:5432
 
   frontend:
     build: ./frontend/
@@ -18,3 +31,6 @@ services:
       - /usr/src/fronted/node_modules
     ports:
       - "4200:4201"
+
+volumes:
+    postgres_data:
