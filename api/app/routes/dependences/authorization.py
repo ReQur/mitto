@@ -11,7 +11,6 @@ from app.services.authorization import (
 )
 from app.services.user import UserServiceException, InactiveUserException
 
-
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/account/login")
 
 

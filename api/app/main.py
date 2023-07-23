@@ -1,6 +1,7 @@
 from fastapi import FastAPI
-from app.routes import account, websocket, chat
 from fastapi.middleware.cors import CORSMiddleware
+
+from app.routes import account, websocket, chat
 
 app = FastAPI()
 
@@ -10,6 +11,7 @@ app.include_router(chat.router)
 
 origins = [
     "http://localhost:4200",
+    "http://localhost:4201",
 ]
 
 app.add_middleware(
