@@ -8,7 +8,7 @@ import { UserInfo } from '../models/user-info';
   providedIn: 'root'
 })
 export class AccountService {
-  private API_URL = 'http://localhost:8004'; // Replace with your API url
+  private API_URL = 'http://localhost:8000'; // Replace with your API url
   private _userInfo: BehaviorSubject<UserInfo> = new BehaviorSubject<UserInfo>(this.retrieveUserInfo());
   private isAuthedSource$ = new ReplaySubject<boolean>(1);
 

@@ -4,19 +4,17 @@ services:
 
   web:
     build: ./api/
-    command: uvicorn app.main:app --host 0.0.0.0 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
     volumes:
       - ./api/:/usr/src/app
     ports:
-      - 8004:8000
+      - "8000:8004"
 
   frontend:
-    build:
-      context: ./frontend/
-      dockerfile: Dockerfile
-    command: ng serve --host 0.0.0.0
+    build: ./frontend/
+    command: ng serve --host 0.0.0.0 --port 4201
     volumes:
-      - './frontend/:/usr/src/fronted/'
-      - '/usr/src/fronted/node_modules'
+      - ./frontend/:/usr/src/fronted/
+      - /usr/src/fronted/node_modules
     ports:
-      - '4201:4200'
+      - "4200:4201"

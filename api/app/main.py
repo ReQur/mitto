@@ -10,6 +10,7 @@ app.include_router(chat.router)
 
 origins = [
     "http://localhost:4200",
+    "http://localhost:4201",
 ]
 
 app.add_middleware(
