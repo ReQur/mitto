@@ -1,34 +1,31 @@
 import { Component, OnInit } from '@angular/core';
 import {ChatService} from "src/app/services/chat.service";
 import {Chat} from "../../models/chat";
-import {Subject, takeUntil} from "rxjs";
+import {Observable, Subject, takeUntil} from "rxjs";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-chat-list',
   templateUrl: './chat-list.component.html',
-  styleUrls: ['./chat-list.component.css']
+  styleUrls: ['./chat-list.component.css'],
 })
 export class ChatListComponent implements OnInit {
-  private unsubscribe$ = new Subject<void>();
 
   newMessageText: string = '';
   recipientId: string = '';
 
-  constructor(private chatService: ChatService) { }
+  chats$: Observable<Chat[]>
+  constructor(private chatService: ChatService) {
+    this.chats$ = this.chatService.chats.pipe(takeUntilDestroyed())
+  }
   chats: Chat[] = []
   ngOnInit(): void {
-    this.chatService.chats.pipe(
-      takeUntil(this.unsubscribe$)
-    ).subscribe(chats => {
+    this.chats$.subscribe(chats => {
       this.chats = chats
     });
     this.chatService.reload();
   }
 
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
 
   getChats(): void {
     this.chatService.reload();

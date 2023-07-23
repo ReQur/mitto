@@ -2,9 +2,10 @@ import { Component, OnInit, Input } from '@angular/core';
 import { ChatService } from "src/app/services/chat.service";
 import { AccountService } from "src/app/services/account.service";
 import {Message} from "../../models/message";
-import {Subject, takeUntil} from "rxjs";
+import {Observable, Subject, takeUntil} from "rxjs";
 import {Chat} from "../../models/chat";
 import {UserInfo} from "../../models/user-info";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-chat',
@@ -16,37 +17,31 @@ export class ChatComponent implements OnInit {
   currentUser?: UserInfo;
   newMessageText: string = '';
 
-  private unsubscribe$ = new Subject<void>();
+  private chat$ = new Observable<Chat | undefined>
+  private user$ = new Observable<UserInfo>
+  private isNotAuthed$ = new Observable<boolean>
 
-  constructor(private chatService: ChatService, private accountService: AccountService) { }
+  constructor(private chatService: ChatService, private accountService: AccountService) {
+    this.chat$ = this.chatService.currentChat.pipe(takeUntilDestroyed())
+    this.user$ = this.accountService.userInfo.pipe(takeUntilDestroyed())
+    this.isNotAuthed$ = this.accountService.isNotAuthed$.pipe(takeUntilDestroyed())
+  }
   ngOnInit(): void {
-    this.chatService.currentChat.pipe(
-      takeUntil(this.unsubscribe$)
-    ).subscribe(currentChat => {
-      if (currentChat) {
-        this.currentChat =  currentChat;
+    this.chat$.subscribe(chat => {
+      if (chat) {
+        this.currentChat =  chat;
       }
     });
-    this.accountService.userInfo.pipe(
-      takeUntil(this.unsubscribe$)
-    ).subscribe(currentUser => {
-      if (currentUser) {
-        this.currentUser =  currentUser;
+    this.user$.subscribe(user => {
+      if (user) {
+        this.currentUser =  user;
       }
     });
-    this.accountService.isNotAuthed$.pipe(
-      takeUntil(this.unsubscribe$)
-    ).subscribe(_ => {
+    this.isNotAuthed$.subscribe(_ => {
       this.currentChat = undefined
     });
     this.chatService.reload();
   }
-
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
-  }
-
 
   sendMessage(): void {
     if (this.currentChat && this.currentUser){

@@ -2,7 +2,8 @@ import { Component } from '@angular/core';
 import { AccountService } from 'src/app/services/account.service';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import {UserInfo} from "../../models/user-info";
-import {Subject, takeUntil} from "rxjs";
+import {Observable, Subject, takeUntil} from "rxjs";
+import {takeUntilDestroyed} from "@angular/core/rxjs-interop";
 
 @Component({
   selector: 'app-login',
@@ -16,24 +17,20 @@ export class LoginComponent {
   password: string;
   currentUser?: UserInfo;
 
-  private unsubscribe$ = new Subject<void>();
+  private user$ = new Observable<UserInfo>
 
-  constructor(private accountService: AccountService) { }
+
+  constructor(private accountService: AccountService) {
+    this.user$ = this.accountService.userInfo.pipe(takeUntilDestroyed())
+  }
 
   ngOnInit(): void {
-    this.accountService.userInfo.pipe(
-      takeUntil(this.unsubscribe$)
-    ).subscribe(currentUser => {
-      if (currentUser) {
-        this.currentUser =  currentUser;
+    this.user$.subscribe(user => {
+      if (user) {
+        this.currentUser =  user;
       }
     });
     this.accountService.reload();
-  }
-
-  ngOnDestroy(): void {
-    this.unsubscribe$.next();
-    this.unsubscribe$.complete();
   }
 
 
