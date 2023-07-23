@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.core.events.create_database_event import create_database
 from app.routes import account, websocket, chat
 from app.core.events import database_connection_event as db_conn
 
@@ -24,6 +25,7 @@ app.add_middleware(
     expose_headers=["*"],
 )
 
+app.add_event_handler("startup", create_database())
 app.add_event_handler("startup", db_conn.start())
 app.add_event_handler("shutdown", db_conn.stop())
 

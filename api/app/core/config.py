@@ -1,8 +1,12 @@
+from pathlib import Path
+
 from databases import DatabaseURL
 from starlette.config import Config
 from starlette.datastructures import Secret
 
-config = Config(".env")
+env_file = Path("./api/.env")
+
+config = Config(env_file=env_file)
 PROJECT_NAME = "mitto"
 VERSION = "0.3.0"
 API_PREFIX = "/"
@@ -16,4 +20,9 @@ DATABASE_URL = config(
     "DATABASE_URL",
     cast=DatabaseURL,
     default=f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}",
+)
+ROOT_URL = config(
+    "DATABASE_URL",
+    cast=DatabaseURL,
+    default=f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/",
 )
