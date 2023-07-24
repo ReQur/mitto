@@ -10,9 +10,15 @@ from app.core.events import database_connection_event as db_conn
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
+    'formatters': {
+        'standard': {
+            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+        },
+    },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
+            'formatter': 'standard',
         },
     },
     "root": {
