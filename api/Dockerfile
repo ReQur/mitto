@@ -2,16 +2,15 @@
 FROM python:3.11.4-alpine
 
 #
-WORKDIR /usr/src/app
+WORKDIR /usr/src/api/
 
 #
-COPY ./requirements.txt /usr/src/requirements.txt
+COPY ./ /usr/src/api/
 
 RUN pip install --upgrade pip
 
 #
-RUN pip install -r /usr/src/requirements.txt
+RUN pip install -r /usr/src/api/requirements.txt
 
 #
-COPY ./app /usr/src/app
 

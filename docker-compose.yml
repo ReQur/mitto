@@ -6,7 +6,7 @@ services:
     build: ./api/
     command: uvicorn app.main:app --host 0.0.0.0 --port 8004 --reload
     volumes:
-      - ./api/:/usr/src/app
+      - ./api/:/usr/src/api/
     env_file:
       - ./api/.env
     ports:
