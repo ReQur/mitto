@@ -4,7 +4,7 @@ from databases import DatabaseURL
 from starlette.config import Config
 from starlette.datastructures import Secret
 
-env_file = Path("./api/.env")
+env_file = Path(".env")
 
 config = Config(env_file=env_file)
 PROJECT_NAME = "mitto"

@@ -3,22 +3,22 @@ import logging.config
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.core.events.create_database_event import create_database
+from app.core.events.create_database_event import create_database, migrate
 from app.routes import account, websocket, chat
 from app.core.events import database_connection_event as db_conn
 
 LOGGING_CONFIG = {
     "version": 1,
     "disable_existing_loggers": False,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    "formatters": {
+        "standard": {
+            "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
         },
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
-            'formatter': 'standard',
+            "formatter": "standard",
         },
     },
     "root": {
@@ -50,6 +50,7 @@ app.add_middleware(
 )
 
 app.add_event_handler("startup", create_database())
+app.add_event_handler("startup", migrate())
 app.add_event_handler("startup", db_conn.start())
 app.add_event_handler("shutdown", db_conn.stop())
 

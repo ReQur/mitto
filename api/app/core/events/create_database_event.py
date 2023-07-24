@@ -1,6 +1,6 @@
 from typing import Callable
 
-from app.data.migrations import create_database_async
+from app.data.migrations import create_database_async, apply_migrations
 
 
 def create_database() -> Callable:
@@ -8,3 +8,7 @@ def create_database() -> Callable:
         await create_database_async()
 
     return start_app
+
+
+def migrate() -> Callable:
+    return apply_migrations

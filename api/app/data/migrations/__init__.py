@@ -1,4 +1,8 @@
 import logging
+from pathlib import Path
+
+import alembic.command
+from alembic.config import Config
 
 from app.core.config import ROOT_URL, POSTGRES_DB
 from app.data.database import DataBaseConnection
@@ -22,3 +26,8 @@ async def create_database_async():
 
     finally:
         await conn.disconnect()
+
+
+def apply_migrations():
+    alembic_cfg = Config(Path("./alembic.ini"))
+    alembic.command.upgrade(alembic_cfg, "head")
