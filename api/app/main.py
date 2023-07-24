@@ -1,9 +1,27 @@
+import logging.config
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.events.create_database_event import create_database
 from app.routes import account, websocket, chat
 from app.core.events import database_connection_event as db_conn
+
+LOGGING_CONFIG = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+}
+
+logging.config.dictConfig(LOGGING_CONFIG)
 
 app = FastAPI()
 
