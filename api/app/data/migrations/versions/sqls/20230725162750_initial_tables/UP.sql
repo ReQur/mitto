@@ -7,7 +7,8 @@ CREATE TABLE users (
 );
 
 CREATE TABLE chat (
-    id SERIAL PRIMARY KEY
+    id SERIAL PRIMARY KEY,
+    is_active BOOLEAN NOT NULL DEFAULT true
 );
 
 CREATE TABLE user_chat (
