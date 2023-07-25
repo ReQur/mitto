@@ -23,3 +23,9 @@ CREATE TABLE message (
     owner_id INTEGER REFERENCES users(id),
     chat_id INTEGER REFERENCES chat(id)
 );
+
+CREATE TABLE token (
+    id SERIAL PRIMARY KEY,
+    token VARCHAR(256) NOT NULL,
+    is_active BOOLEAN NOT NULL DEFAULT true
+);
