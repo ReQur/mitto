@@ -50,9 +50,9 @@ class AuthorizationService:
             weeks=self.REFRESH_TOKEN_EXPIRE_WEEKS
         )
 
-    def authenticate_user(self, credentials: UserCredentials) -> UserInfo:
+    async def authenticate_user(self, credentials: UserCredentials) -> UserInfo:
         # TODO: Move user service injection to higher level
-        user = self.users.get(email=credentials.email)
+        user = await self.users.get(email=credentials.email)
         if not user or not user.password == credentials.password:
             raise AuthException("Incorrect login or password")
 

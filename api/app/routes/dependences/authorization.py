@@ -84,7 +84,9 @@ class AuthorizationHandler:
         self.scheme = scheme
         self._authorization_service = _authorization_service
 
-    def authenticate_user(self, credentials: UserCredentials) -> UserInfo:
+    async def authenticate_user(
+        self, credentials: UserCredentials
+    ) -> UserInfo:
         """Verify credentials and authorize user
 
         :param credentials: User credentials from login form
@@ -93,7 +95,9 @@ class AuthorizationHandler:
         :raise Unauthorized: If credentials are invalid
         """
         try:
-            return self._authorization_service.authenticate_user(credentials)
+            return await self._authorization_service.authenticate_user(
+                credentials
+            )
         except InactiveUserException:
             raise DeactivatedAccount()
         except (AuthException, UserServiceException):

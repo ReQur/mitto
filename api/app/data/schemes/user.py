@@ -18,6 +18,14 @@ class UserInfo(UserBase):
     id: int
 
 
+class UserPublic(UserInfo):
+    is_active: bool
+
+
+class UserDB(UserPublic, UserCredentials):
+    pass
+
+
 class User(UserInfo):
     is_active: bool
     chats: List[Chat]
