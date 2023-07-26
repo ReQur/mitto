@@ -34,7 +34,7 @@ class UserQuery:
             raise Exception(f"Not found user with email: {uid}")
 
     async def get_all(self) -> List[UserDB]:
-        result = await self.db.fetch_one(GET_ALL_USERS_QUERY)
+        result = await self.db.fetch_all(GET_ALL_USERS_QUERY)
         return [UserDB(**user) for user in result]
 
 

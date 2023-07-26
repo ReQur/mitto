@@ -13,6 +13,10 @@ class ChatUsers(ChatBase):
     user_ids: List[int]
 
 
-class Chat(ChatUsers):
+class ChatDB(BaseModel):
     id: int
+    is_active: bool
+
+
+class ChatWithMessages(ChatDB):
     messages: List[Message]
