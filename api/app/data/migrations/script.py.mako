@@ -18,11 +18,11 @@ depends_on = ${repr(depends_on)}
 
 
 def upgrade() -> None:
-    file = Path(f"./sqls/{revision}_${message}/UP.sql")
+    file = Path(f"./app/data/migrations/versions/sqls/{revision}_${message}/UP.sql")
     op.execute(sqltext=file.read_text())
 
 
 
 def downgrade() -> None:
-    file = Path(f"./sqls/{revision}_${message}/DOWN.sql")
+    file = Path(f"./app/data/migrations/versions/sqls/{revision}_${message}/DOWN.sql")
     op.execute(sqltext=file.read_text())
