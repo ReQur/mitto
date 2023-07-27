@@ -14,7 +14,7 @@ class ChatService:
         self.query = query
 
     async def add(self, users: ChatUsers) -> int:
-        return await self.query.add(users.user_ids)
+        return (await self.query.add(users.user_ids)).id
 
     async def get_all(self, uid: int) -> list[ChatDB]:
         return await self.query.get_all(uid)
