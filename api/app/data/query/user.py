@@ -1,9 +1,7 @@
 from typing import List
 
-from app.data import models
 from app.data.database import database
 from app.data.schemes.user import UserPublic, UserDB
-from app.data.test_data import test_data
 
 GET_USER_BY_EMAIL_QUERY = "SELECT * FROM users WHERE email=:email"
 GET_USER_QUERY = "SELECT * FROM users WHERE id=:uid"

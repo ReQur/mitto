@@ -1,9 +1,5 @@
-from sqlalchemy import text
-
-from app.data import models
 from app.data.database import database
 from app.data.schemes.chat import ChatDB
-from app.data.test_data import test_data
 
 ADD_CHAT_QUERY = """WITH new_chat AS (
     INSERT INTO chat (is_active)
