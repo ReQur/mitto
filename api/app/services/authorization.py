@@ -50,7 +50,9 @@ class AuthorizationService:
             weeks=self.REFRESH_TOKEN_EXPIRE_WEEKS
         )
 
-    async def authenticate_user(self, credentials: UserCredentials) -> UserInfo:
+    async def authenticate_user(
+        self, credentials: UserCredentials
+    ) -> UserInfo:
         # TODO: Move user service injection to higher level
         user = await self.users.get(email=credentials.email)
         if not user or not user.password == credentials.password:
@@ -69,13 +71,13 @@ class AuthorizationService:
             lifetime=self.access_token_timedelta,
         )
 
-    def create_refresh_token(self, sub: dict) -> str:
+    async def create_refresh_token(self, sub: dict) -> str:
         token = self._create_token(
             sub=sub,
             purpose={"purp": "refresh"},
             lifetime=self.refresh_token_timedelta,
         )
-        self.query.add(token)
+        await self.query.add(token)
         return token
 
     def _create_token(
@@ -109,10 +111,10 @@ class AuthorizationService:
             raise AuthException("Invalid token")
 
         if payload.get("purp", "access") == "refresh":
-            if not self.query.check(token):
+            if not (await self.query.check(token)):
                 raise AuthException("Blacklisted refresh token")
 
-            self.query.disable(token)
+            await self.query.disable(token)
 
         subject: UserInfo = UserInfo(**payload.get("sub"))
         if subject is None:

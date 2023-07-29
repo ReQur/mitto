@@ -39,7 +39,7 @@ async def login_for_access_token(
     except (AuthException, UserServiceException, InactiveUserException):
         raise
 
-    access_token = authorization_handler.authorize_user(user, response)
+    access_token = await authorization_handler.authorize_user(user, response)
     return access_token
 
 
@@ -78,5 +78,5 @@ async def refresh_tokens(
         username=user.username,
         id=user.id,
     )
-    access_token = authorization_handler.authorize_user(user, response)
+    access_token = await authorization_handler.authorize_user(user, response)
     return access_token
