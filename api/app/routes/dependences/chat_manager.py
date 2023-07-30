@@ -68,7 +68,7 @@ class ChatManager:
         message = MessageSend(
             text=message_text, chat_id=chat_id, owner_id=initiator.id
         )
-        return self.messages.add(message)
+        return await self.messages.add(message)
 
     async def retain_message(self, message: MessageSend) -> Message:
         """Retains new message and save to proposed chat
@@ -79,11 +79,9 @@ class ChatManager:
         if not (await self.chats.get(message.owner_id, message.chat_id)):
             raise BadRequest("Cannot send message to this chat")
 
-        return self.messages.add(message)
+        return await self.messages.add(message)
 
-    async def get_messages(
-        self, user: UserInfo, chat_id
-    ) -> dict[int, models.Message]:
+    async def get_messages(self, user: UserInfo, chat_id) -> list[Message]:
         """get all messages related to proposed chat from the database
 
         :param user: user which asks messages
@@ -93,7 +91,7 @@ class ChatManager:
         if not (await self.chats.get(user.id, chat_id)):
             raise BadRequest("Cannot read messages from this chat")
 
-        return self.messages.get_all(chat_id)
+        return await self.messages.get_all(chat_id)
 
     async def get_chats(self, user: UserInfo) -> list[ChatDB]:
         """get all chats related to user from the database

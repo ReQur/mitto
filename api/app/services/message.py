@@ -14,8 +14,8 @@ class MessageService:
     def __init__(self, query=message_query):
         self.query = query
 
-    def add(self, message: MessageSend) -> Message:
-        message_id = self.query.add(
+    async def add(self, message: MessageSend) -> Message:
+        message_id = await self.query.add(
             message.owner_id, message.chat_id, message.text
         )
         return Message(
@@ -25,8 +25,8 @@ class MessageService:
             text=message.text,
         )
 
-    def get_all(self, chat_id: int) -> dict[int, models.Message]:
-        return self.query.get_all(chat_id)
+    async def get_all(self, chat_id: int) -> list[Message]:
+        return await self.query.get_all(chat_id)
 
 
 message_service = MessageService()
