@@ -14,7 +14,10 @@ inserted_users AS (
 SELECT id, is_active FROM new_chat;
 """
 
-GET_ALL_CHATS_QUERY = "SELECT * FROM chat WHERE id=:user_id"
+GET_ALL_CHATS_QUERY = """SELECT chat.*
+FROM chat
+JOIN user_chat ON chat.id = user_chat.chat_id 
+WHERE user_chat.user_id=:user_id"""
 
 GET_CHAT_QUERY = """SELECT chat.id, chat.is_active
 FROM chat
