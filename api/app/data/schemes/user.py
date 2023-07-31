@@ -2,7 +2,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from app.data.schemes.chat import Chat
+from app.data.schemes.chat import ChatDB
 
 
 class UserBase(BaseModel):
@@ -18,6 +18,14 @@ class UserInfo(UserBase):
     id: int
 
 
+class UserPublic(UserInfo):
+    is_active: bool
+
+
+class UserDB(UserPublic, UserCredentials):
+    pass
+
+
 class User(UserInfo):
     is_active: bool
-    chats: List[Chat]
+    chats: List[ChatDB]

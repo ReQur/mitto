@@ -2,9 +2,8 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.data import models
-from app.data.schemes.chat import Chat
-from app.data.schemes.message import MessageSend, MessageBase
+from app.data.schemes.chat import ChatDB
+from app.data.schemes.message import MessageSend, MessageBase, Message
 from app.data.schemes.user import UserInfo
 from app.routes.dependences.authorization import (
     DeactivatedAccount,
@@ -26,40 +25,40 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[Chat])
+@router.get("/", response_model=list[ChatDB])
 async def get_chats(
     claims: Annotated[
         UserInfo, Depends(authorization_handler.validate_access_token)
     ]
-) -> list[Chat]:
+) -> list[ChatDB]:
     try:
-        user = user_service.get(claims.id)
+        user = await user_service.get(claims.id)
     except InactiveUserException:
         raise DeactivatedAccount()
     except UserServiceException:
         raise Unauthorized("Who are you? Please reauthenticate to the system")
 
-    return chat_manager.get_chats(user).values()
+    return await chat_manager.get_chats(user)
 
 
-@router.get("/{chat_id}/messages", response_model=list[models.Message])
+@router.get("/{chat_id}/messages", response_model=list[Message])
 async def get_messages(
     claims: Annotated[
         UserInfo, Depends(authorization_handler.validate_access_token)
     ],
     chat_id: int,
-) -> list[models.Message]:
+) -> list[Message]:
     try:
-        user = user_service.get(claims.id)
+        user = await user_service.get(claims.id)
     except InactiveUserException:
         raise DeactivatedAccount()
     except UserServiceException:
         raise Unauthorized("Who are you? Please reauthenticate to the system")
 
-    return chat_manager.get_messages(user, chat_id).values()
+    return await chat_manager.get_messages(user, chat_id)
 
 
-@router.post("/send-message", response_model=models.Message)
+@router.post("/send-message", response_model=Message)
 async def send_message(
     claims: Annotated[
         UserInfo, Depends(authorization_handler.validate_access_token)
@@ -67,7 +66,7 @@ async def send_message(
     message: MessageSend,
 ):
     try:
-        user = user_service.get(claims.id)
+        user = await user_service.get(claims.id)
     except InactiveUserException:
         raise DeactivatedAccount()
     except UserServiceException:
@@ -79,10 +78,10 @@ async def send_message(
             detail="Message owner_id and your id isn't match",
         )
 
-    return chat_manager.retain_message(message)
+    return await chat_manager.retain_message(message)
 
 
-@router.post("/initiate/{recipient_id}", response_model=models.Message)
+@router.post("/initiate/{recipient_id}", response_model=Message)
 async def initiate_chat(
     claims: Annotated[
         UserInfo, Depends(authorization_handler.validate_access_token)
@@ -91,17 +90,17 @@ async def initiate_chat(
     message: MessageBase,
 ):
     try:
-        user = user_service.get(claims.id)
+        user = await user_service.get(claims.id)
     except InactiveUserException:
         raise DeactivatedAccount()
     except UserServiceException:
         raise Unauthorized("Who are you? Please reauthenticate to the system")
 
     try:
-        recipient = user_service.get(recipient_id)
+        recipient = await user_service.get(recipient_id)
     except InactiveUserException:
         raise BadRequest("Recipient account is deactivated")
     except UserServiceException:
         raise BadRequest("Cannot find asked account")
 
-    return chat_manager.initiate_chat(user, recipient, message.text)
+    return await chat_manager.initiate_chat(user, recipient, message.text)

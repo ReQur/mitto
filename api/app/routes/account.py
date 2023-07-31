@@ -31,7 +31,7 @@ async def login_for_access_token(
     response: Response,
 ):
     try:
-        user = authorization_handler.authenticate_user(
+        user = await authorization_handler.authenticate_user(
             UserCredentials(
                 email=form_data.username, password=form_data.password
             )
@@ -39,7 +39,7 @@ async def login_for_access_token(
     except (AuthException, UserServiceException, InactiveUserException):
         raise
 
-    access_token = authorization_handler.authorize_user(user, response)
+    access_token = await authorization_handler.authorize_user(user, response)
     return access_token
 
 
@@ -50,13 +50,13 @@ async def read_users_me(
     ]
 ):
     try:
-        user = user_service.get(claims.id)
+        _user = await user_service.get(claims.id)
     except InactiveUserException:
         raise DeactivatedAccount()
     except UserServiceException:
         raise Unauthorized("Who are you? Please reauthenticate to the system")
 
-    return user
+    return UserInfo(**_user.dict())
 
 
 @router.get("/refresh", response_model=Token)
@@ -67,7 +67,7 @@ async def refresh_tokens(
     response: Response,
 ):
     try:
-        user = user_service.get(claims.id)
+        user = await user_service.get(claims.id)
     except InactiveUserException:
         raise DeactivatedAccount()
     except UserServiceException:
@@ -78,5 +78,5 @@ async def refresh_tokens(
         username=user.username,
         id=user.id,
     )
-    access_token = authorization_handler.authorize_user(user, response)
+    access_token = await authorization_handler.authorize_user(user, response)
     return access_token

@@ -17,7 +17,7 @@ config = alembic.context.config
 
 
 # Interpret the config file for logging
-fileConfig(config.config_file_name)
+fileConfig(config.config_file_name, disable_existing_loggers=False)
 logger = logging.getLogger("alembic.env")
 
 

@@ -1,35 +1,51 @@
-from app.data import models
-from app.data.schemes.chat import Chat
-from app.data.test_data import test_data
+from app.data.database import database
+from app.data.schemes.chat import ChatDB
+
+ADD_CHAT_QUERY = """WITH new_chat AS (
+    INSERT INTO chat (is_active)
+    VALUES (true)
+    RETURNING id, is_active
+),
+inserted_users AS (
+    INSERT INTO user_chat (user_id, chat_id)
+    SELECT user_id, new_chat.id
+    FROM new_chat, unnest(:uids ::integer[]) AS user_id
+)
+SELECT id, is_active FROM new_chat;
+"""
+
+GET_ALL_CHATS_QUERY = """SELECT chat.*
+FROM chat
+JOIN user_chat ON chat.id = user_chat.chat_id 
+WHERE user_chat.user_id=:user_id"""
+
+GET_CHAT_QUERY = """SELECT chat.id, chat.is_active
+FROM chat
+JOIN user_chat ON chat.id = user_chat.chat_id
+WHERE user_chat.user_id = :uid AND chat.id = :chat_id;
+"""
 
 
 class ChatQuery:
-    def __init__(self, db=test_data):
+    def __init__(self, db=database):
         self.db = db
 
-    def add(
+    async def add(
         self,
         uids: [int],
-    ) -> int:
-        chat_id = max(self.db["chats"].keys()) + 1
-        self.db["chats"][chat_id] = models.Chat(
-            id=chat_id, user_ids=uids, messages=[]
+    ) -> ChatDB:
+        result = await self.db.fetch_one(ADD_CHAT_QUERY, {"uids": uids})
+        return ChatDB(**result)
+
+    async def get_all(self, uid: int) -> list[ChatDB]:
+        result = await self.db.fetch_all(GET_ALL_CHATS_QUERY, {"user_id": uid})
+        return [ChatDB(**user) for user in result]
+
+    async def get(self, uid: int, chat_id: int) -> ChatDB:
+        result = await self.db.fetch_one(
+            GET_CHAT_QUERY, {"uid": uid, "chat_id": chat_id}
         )
-        return chat_id
-
-    def get_all(self, uid: int) -> dict[int, Chat]:
-        chats: dict[int, models.Chat] = {}
-        for chat in self.db["chats"].values():
-            if uid in chat.user_ids:
-                chats[chat.id] = Chat(
-                    id=chat.id, user_ids=chat.user_ids, messages=[]
-                )
-        return chats
-
-    def get(self, uid: int, chat_id: int) -> models.Chat:
-        for chat in self.db["chats"].values():
-            if uid in chat.user_ids and chat.id == chat_id:
-                return chat
+        return ChatDB(**result)
 
 
 chat_query = ChatQuery()

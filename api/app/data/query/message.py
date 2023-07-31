@@ -1,28 +1,34 @@
-from app.data import models
-from app.data.test_data import test_data
+from app.data.schemes.message import Message
+from app.data.database import database
+
+ADD_MESSAGE_QUERY = """INSERT INTO message (chat_id, owner_id, text) 
+VALUES (:chat_id, :uid, :text)
+RETURNING id;
+"""
+
+GET_MESSAGES_QUERY = "SELECT * FROM message WHERE chat_id = :chat_id;"
 
 
 class MessageQuery:
-    def __init__(self, db=test_data):
+    def __init__(self, db=database):
         self.db = db
 
-    def add(
+    async def add(
         self,
         uid: int,
         chat_id: int,
         text: str,
     ) -> int:
-        message_id = max(self.db["messages"].keys()) + 1
-        self.db["messages"][message_id] = models.Message(
-            id=message_id, chat_id=chat_id, owner_id=uid, text=text
+        message_id = await self.db.execute(
+            ADD_MESSAGE_QUERY, {"uid": uid, "chat_id": chat_id, "text": text}
         )
-        return chat_id
+        return message_id
 
-    def get_all(self, chat_id: int) -> dict[int, models.Message]:
-        messages: dict[int, models.Message] = {}
-        for message in self.db["messages"].values():
-            if chat_id == message.chat_id:
-                messages[message.id] = message
+    async def get_all(self, chat_id: int) -> list[Message]:
+        result = await self.db.fetch_all(
+            GET_MESSAGES_QUERY, {"chat_id": chat_id}
+        )
+        messages = [Message(**message) for message in result]
         return messages
 
 

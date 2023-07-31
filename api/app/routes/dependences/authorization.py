@@ -84,7 +84,9 @@ class AuthorizationHandler:
         self.scheme = scheme
         self._authorization_service = _authorization_service
 
-    def authenticate_user(self, credentials: UserCredentials) -> UserInfo:
+    async def authenticate_user(
+        self, credentials: UserCredentials
+    ) -> UserInfo:
         """Verify credentials and authorize user
 
         :param credentials: User credentials from login form
@@ -93,13 +95,15 @@ class AuthorizationHandler:
         :raise Unauthorized: If credentials are invalid
         """
         try:
-            return self._authorization_service.authenticate_user(credentials)
+            return await self._authorization_service.authenticate_user(
+                credentials
+            )
         except InactiveUserException:
             raise DeactivatedAccount()
         except (AuthException, UserServiceException):
             raise Unauthorized("Invalid credentials")
 
-    def authorize_user(
+    async def authorize_user(
         self, user: UserInfo, response: Response
     ) -> dict[str, str]:
         """
@@ -115,7 +119,7 @@ class AuthorizationHandler:
         access_token = self._authorization_service.create_access_token(
             sub=user.__dict__
         )
-        refresh_token = self._authorization_service.create_refresh_token(
+        refresh_token = await self._authorization_service.create_refresh_token(
             sub=user.__dict__
         )
         response.set_cookie(
