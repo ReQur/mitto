@@ -1,6 +1,5 @@
 from typing import List
 
-from app.data import models
 from app.data.query.user import UserQuery, user_query
 from app.data.schemes.user import UserPublic, UserDB
 

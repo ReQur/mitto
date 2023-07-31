@@ -2,7 +2,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
-from app.data import models
 from app.data.schemes.chat import ChatDB
 from app.data.schemes.message import MessageSend, MessageBase, Message
 from app.data.schemes.user import UserInfo

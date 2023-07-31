@@ -1,6 +1,5 @@
 from fastapi import HTTPException, status
 
-from app.data import models
 from app.data.schemes.chat import ChatUsers, ChatDB
 from app.data.schemes.message import MessageSend, Message
 from app.data.schemes.user import UserInfo

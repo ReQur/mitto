@@ -1,7 +1,5 @@
-from app.data import models
-from app.data.models import Message
 from app.data.query.message import MessageQuery, message_query
-from app.data.schemes.message import MessageSend
+from app.data.schemes.message import MessageSend, Message
 
 
 class MessageServiceException(Exception):

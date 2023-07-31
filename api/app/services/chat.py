@@ -1,4 +1,3 @@
-from app.data import models
 from app.data.query.chat import ChatQuery, chat_query
 from app.data.schemes.chat import ChatUsers, ChatDB
 
